@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/db';
-import { scans } from '@/db/schema';
+import { db } from '@repo/shared/db';
+import { scans } from '@repo/shared/db/schema';
 import { eq } from 'drizzle-orm';
 
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {

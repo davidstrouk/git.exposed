@@ -1,10 +1,10 @@
-import { db } from '@/db';
-import { scans, findings as findingsTable } from '@/db/schema';
+import { db } from '@repo/shared/db';
+import { scans, findings as findingsTable } from '@repo/shared/db/schema';
 import { eq } from 'drizzle-orm';
-import { downloadRepo } from './github';
+import { downloadRepo } from '@repo/shared/github';
 import { scan } from './engine';
 import { allChecks } from './checks';
-import { calculateScore, getGrade } from './scoring';
+import { calculateScore, getGrade } from '@repo/shared/scoring';
 import { rm } from 'node:fs/promises';
 
 export async function runScan(scanId: string, owner: string, repo: string, accessToken?: string) {

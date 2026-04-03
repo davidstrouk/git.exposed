@@ -1,4 +1,4 @@
-import type { Check, Finding } from '../types';
+import type { Check, Finding } from '@repo/shared/types';
 import { readFile, access } from 'node:fs/promises';
 import path from 'node:path';
 

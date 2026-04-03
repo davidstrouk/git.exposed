@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
-import { db } from '@/db';
-import { scans } from '@/db/schema';
+import { db } from '@repo/shared/db';
+import { scans } from '@repo/shared/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
 
 export const size = { width: 1200, height: 630 };

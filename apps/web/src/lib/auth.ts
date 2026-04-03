@@ -1,8 +1,8 @@
 import NextAuth from 'next-auth';
 import GitHub from 'next-auth/providers/github';
 import { DrizzleAdapter } from '@auth/drizzle-adapter';
-import { getRealDb } from '@/db';
-import { users, accounts, sessions, verificationTokens } from '@/db/schema';
+import { getRealDb } from '@repo/shared/db';
+import { users, accounts, sessions, verificationTokens } from '@repo/shared/db/schema';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(getRealDb() as any, {

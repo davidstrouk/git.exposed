@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
-import { db } from '@/db';
-import { scans, accounts, subscriptions } from '@/db/schema';
+import { db } from '@repo/shared/db';
+import { scans, accounts, subscriptions } from '@repo/shared/db/schema';
 import { eq, and, desc, gt } from 'drizzle-orm';
-import { parseGitHubUrl } from '@/scanner/github';
+import { parseGitHubUrl } from '@repo/shared/github';
+import { isValidRepoName } from '@repo/shared/validation';
 import { runScan } from '@/scanner/run-scan';
 import { rateLimit } from '@/lib/rate-limit';
 import { auth } from '@/lib/auth';
@@ -69,6 +70,10 @@ export async function POST(request: Request) {
   const info = parseGitHubUrl(url);
   if (!info) {
     return NextResponse.json({ error: 'Invalid GitHub URL' }, { status: 400 });
+  }
+
+  if (!isValidRepoName(info.owner) || !isValidRepoName(info.repo)) {
+    return NextResponse.json({ error: 'Invalid owner or repo name' }, { status: 400 });
   }
 
   // Check if repo is public or private

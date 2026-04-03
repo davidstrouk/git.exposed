@@ -1,4 +1,4 @@
-import type { Check } from '../types';
+import type { Check } from '@repo/shared/types';
 import { secretsCheck } from './secrets';
 import { securityCheck } from './security';
 import { dependenciesCheck } from './dependencies';

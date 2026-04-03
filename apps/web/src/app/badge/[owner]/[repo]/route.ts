@@ -1,5 +1,5 @@
-import { db } from '@/db';
-import { scans } from '@/db/schema';
+import { db } from '@repo/shared/db';
+import { scans } from '@repo/shared/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
 
 const GRADE_COLORS: Record<string, string> = {

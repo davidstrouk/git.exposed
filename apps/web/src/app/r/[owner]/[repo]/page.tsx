@@ -1,5 +1,5 @@
-import { db } from '@/db';
-import { scans, findings, accounts, subscriptions } from '@/db/schema';
+import { db } from '@repo/shared/db';
+import { scans, findings, accounts, subscriptions } from '@repo/shared/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import { ScoreCircle } from '@/components/score-circle';

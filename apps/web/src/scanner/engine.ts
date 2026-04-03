@@ -1,4 +1,4 @@
-import type { Check, ScanResult } from './types';
+import type { Check, ScanResult } from '@repo/shared/types';
 
 export async function scan(directory: string, checks: Check[]): Promise<ScanResult> {
   const findings: ScanResult['findings'] = [];

@@ -1,4 +1,4 @@
-import type { Check, Finding, Severity } from '../types';
+import type { Check, Finding, Severity } from '@repo/shared/types';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { walk } from './walk';

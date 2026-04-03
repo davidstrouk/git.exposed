@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'node:crypto';
-import { db } from '@/db';
-import { subscriptions, users } from '@/db/schema';
+import { db } from '@repo/shared/db';
+import { subscriptions, users } from '@repo/shared/db/schema';
 import { eq } from 'drizzle-orm';
 
 function verifySignature(rawBody: string, signature: string, secret: string): boolean {
