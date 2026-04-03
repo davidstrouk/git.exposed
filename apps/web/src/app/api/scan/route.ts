@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
+import { Octokit } from '@octokit/rest';
 import { db } from '@repo/shared/db';
-import { scans, accounts, subscriptions } from '@repo/shared/db/schema';
+import { scans, accounts, subscriptions, monitoredRepos } from '@repo/shared/db/schema';
 import { eq, and, desc, gt } from 'drizzle-orm';
 import { parseGitHubUrl } from '@repo/shared/github';
 import { isValidRepoName } from '@repo/shared/validation';
@@ -163,6 +164,53 @@ export async function POST(request: Request) {
   }
 
   const [result] = await db.select().from(scans).where(eq(scans.id, scan.id));
+
+  // Auto-install webhook for Pro users
+  if (result.status === 'complete') {
+    try {
+      const monitorSession = await auth();
+      if (monitorSession?.user?.id) {
+        const isPro = await hasProSubscription(monitorSession.user.id);
+        if (isPro) {
+          const [existing] = await db.select().from(monitoredRepos)
+            .where(and(
+              eq(monitoredRepos.repoOwner, info.owner),
+              eq(monitoredRepos.repoName, info.repo),
+              eq(monitoredRepos.userId, monitorSession.user.id),
+            ))
+            .limit(1);
+
+          if (!existing) {
+            const token = await getUserGitHubToken(monitorSession.user.id);
+            const webhookSecret = process.env.GITHUB_WEBHOOK_SECRET;
+            if (token && webhookSecret) {
+              const octokit = new Octokit({ auth: token });
+              const { data: hook } = await octokit.repos.createWebhook({
+                owner: info.owner,
+                repo: info.repo,
+                config: {
+                  url: 'https://git.exposed/api/webhook/github',
+                  content_type: 'json',
+                  secret: webhookSecret,
+                },
+                events: ['push'],
+                active: true,
+              });
+
+              await db.insert(monitoredRepos).values({
+                userId: monitorSession.user.id,
+                repoOwner: info.owner,
+                repoName: info.repo,
+                webhookId: hook.id,
+              });
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Webhook install failed:', err instanceof Error ? err.message : err);
+    }
+  }
 
   return NextResponse.json({
     id: scan.id,
