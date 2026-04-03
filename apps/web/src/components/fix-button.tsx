@@ -106,7 +106,7 @@ export function FixButton({ scanId, findings, isPro }: Props) {
           onClick={handleFix}
           disabled={selected.size === 0 || status === 'loading' || status === 'polling'}
           aria-label={`Fix ${selected.size} selected findings`}
-          className="bg-red-600 hover:bg-red-500 disabled:bg-slate-700 disabled:text-slate-500 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+          className="bg-green-600 hover:bg-green-500 disabled:bg-slate-700 disabled:text-slate-500 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
         >
           {status === 'loading' ? 'Creating fix...' :
            status === 'polling' ? 'Generating PR...' :
@@ -118,13 +118,13 @@ export function FixButton({ scanId, findings, isPro }: Props) {
         {findings.map((f) => (
           <label
             key={f.id}
-            className="flex items-start gap-3 p-3 rounded-lg border border-slate-700 hover:border-slate-600 cursor-pointer transition-colors"
+            className="flex items-start gap-3 p-3 rounded-lg border border-ds-border/30 hover:border-ds-border bg-ds-muted/50 cursor-pointer transition-colors"
           >
             <input
               type="checkbox"
               checked={selected.has(f.id)}
               onChange={() => toggle(f.id)}
-              className="mt-1 accent-red-500"
+              className="mt-1 accent-green-500"
             />
             <div className="flex-1 min-w-0">
               <span className="text-sm text-slate-200">{f.title}</span>

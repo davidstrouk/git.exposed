@@ -1,20 +1,38 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  /* Design system: Dark Mode for security scanner */
+  --ds-bg: #0F172A;
+  --ds-fg: #F8FAFC;
+  --ds-primary: #1E293B;
+  --ds-secondary: #334155;
+  --ds-accent: #22C55E;
+  --ds-muted: #272F42;
+  --ds-border: #475569;
+  --ds-destructive: #EF4444;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--ds-bg);
+  --color-foreground: var(--ds-fg);
+  --color-ds-primary: var(--ds-primary);
+  --color-ds-secondary: var(--ds-secondary);
+  --color-ds-accent: var(--ds-accent);
+  --color-ds-muted: var(--ds-muted);
+  --color-ds-border: var(--ds-border);
+  --color-ds-destructive: var(--ds-destructive);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--ds-bg);
+  color: var(--ds-fg);
+}
+
+/* Subtle glow for hero headings */
+.hero-glow {
+  text-shadow: 0 0 20px rgba(239, 68, 68, 0.3), 0 0 40px rgba(239, 68, 68, 0.1);
 }
 
 @media (prefers-reduced-motion: reduce) {

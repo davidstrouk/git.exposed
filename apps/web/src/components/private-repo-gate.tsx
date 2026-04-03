@@ -33,7 +33,7 @@ export function PrivateRepoGate({ owner, repo, state }: PrivateRepoGateProps) {
       <p className="text-base text-slate-300 font-mono mb-8">{owner}/{repo}</p>
 
       <div className="max-w-md mx-auto">
-        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-8">
+        <div className="bg-ds-muted/50 border border-ds-border/30 rounded-xl p-8">
           <div className="mb-4">
             <svg className="w-10 h-10 text-slate-400 mx-auto" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
@@ -94,7 +94,7 @@ export function PrivateRepoGate({ owner, repo, state }: PrivateRepoGateProps) {
               <button
                 onClick={handleCheckout}
                 disabled={checkoutLoading}
-                className="w-full bg-red-600 hover:bg-red-700 disabled:bg-slate-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+                className="w-full bg-green-600 hover:bg-green-500 disabled:bg-slate-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
               >
                 {checkoutLoading ? 'Redirecting…' : 'Upgrade to Pro — $19/mo'}
               </button>
