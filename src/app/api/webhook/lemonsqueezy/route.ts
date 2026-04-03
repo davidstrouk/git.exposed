@@ -7,6 +7,7 @@ import { eq } from 'drizzle-orm';
 function verifySignature(rawBody: string, signature: string, secret: string): boolean {
   const hmac = crypto.createHmac('sha256', secret);
   const digest = hmac.update(rawBody).digest('hex');
+  if (signature.length !== digest.length) return false;
   return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest));
 }
 
