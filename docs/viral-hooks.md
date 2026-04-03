@@ -35,3 +35,19 @@ I analyzed exactly 10 vibecoding security scanners before building git.exposed. 
 
 ### Tiny Change, Big Impact
 One regex pattern can reveal your Stripe secret key is exposed in production. git.exposed runs 6 of these patterns for free. Shipping this week.
+
+---
+
+## Day 3: Phase 2 — Deep Scanning Engine (Pick one)
+
+### Steal My Process
+Steal my open source security stack: Betterleaks (150+ secret patterns) + OpenGrep (3000+ SAST rules) + Trivy (real CVE database). All MIT/Apache licensed. All free.
+
+### Analysis-Based Insights
+I analyzed 10 vibecoding security scanners. None use battle-tested open source engines. git.exposed now runs Betterleaks + OpenGrep + Trivy under one URL. 3000+ rules. Zero cost.
+
+### You're Losing
+Your vibecoded app is bleeding secrets that 6 regex patterns can't catch. git.exposed Phase 2 drops today with 150+ secret detectors. Paste your repo URL. Free.
+
+### Opposite/Contrarian
+Every vibecoding security tool builds its own scanner from scratch. The paradox: the best scanners already exist as open source. git.exposed just wraps them beautifully.
