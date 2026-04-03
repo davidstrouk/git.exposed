@@ -1,25 +1,23 @@
 {
-  "name": "git-exposed-scanner",
+  "name": "@repo/api",
   "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
+    "build": "echo 'no build step — tsx runs source directly'",
+    "start": "npx tsx src/index.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.12",
-    "@neondatabase/serverless": "^1.0.2",
-    "drizzle-orm": "^0.45.2",
+    "@repo/shared": "workspace:*",
     "hono": "^4.12.10",
-    "tar": "^7.5.13",
     "tsx": "^4.21.0"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
-    "typescript": "^6.0.2",
+    "typescript": "^5",
     "vitest": "^4.1.2"
   }
 }
