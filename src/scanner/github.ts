@@ -1,7 +1,9 @@
-import { mkdtemp, writeFile } from 'node:fs/promises';
+import { mkdtemp } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { execSync } from 'node:child_process';
+import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
+import * as tar from 'tar';
 
 export interface RepoInfo {
   owner: string;
@@ -20,25 +22,28 @@ export function parseGitHubUrl(url: string): RepoInfo | null {
   }
 }
 
-async function fetchTarball(url: string): Promise<Buffer> {
+async function fetchAndExtract(url: string, dir: string): Promise<void> {
   const res = await fetch(url, { redirect: 'follow' });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return Buffer.from(await res.arrayBuffer());
+
+  const webStream = res.body;
+  if (!webStream) throw new Error('No response body');
+
+  const nodeStream = Readable.fromWeb(webStream as any);
+  await pipeline(
+    nodeStream,
+    tar.x({ cwd: dir, strip: 1 }),
+  );
 }
 
 export async function downloadRepo(owner: string, repo: string): Promise<string> {
   const dir = await mkdtemp(path.join(tmpdir(), 'gitexposed-'));
-  const tarPath = path.join(dir, 'repo.tar.gz');
 
-  let buffer: Buffer;
   try {
-    buffer = await fetchTarball(`https://github.com/${owner}/${repo}/archive/refs/heads/main.tar.gz`);
+    await fetchAndExtract(`https://github.com/${owner}/${repo}/archive/refs/heads/main.tar.gz`, dir);
   } catch {
-    buffer = await fetchTarball(`https://github.com/${owner}/${repo}/archive/refs/heads/master.tar.gz`);
+    await fetchAndExtract(`https://github.com/${owner}/${repo}/archive/refs/heads/master.tar.gz`, dir);
   }
-
-  await writeFile(tarPath, buffer);
-  execSync(`tar xzf "${tarPath}" --strip-components=1 -C "${dir}"`, { timeout: 15000 });
 
   return dir;
 }
