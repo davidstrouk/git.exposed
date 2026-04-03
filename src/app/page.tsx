@@ -24,18 +24,12 @@ export default function Home() {
       const data = await res.json();
       if (!res.ok) { setError(data.error); setLoading(false); return; }
 
-      // Poll for completion
-      const poll = setInterval(async () => {
-        const status = await fetch(`/api/scan/${data.id}`).then(r => r.json());
-        if (status.status === 'complete') {
-          clearInterval(poll);
-          router.push(data.reportUrl);
-        } else if (status.status === 'failed') {
-          clearInterval(poll);
-          setError('Scan failed. Is this a valid public repository?');
-          setLoading(false);
-        }
-      }, 1000);
+      if (data.status === 'complete') {
+        router.push(data.reportUrl);
+      } else {
+        setError('Scan failed. Is this a valid public repository?');
+        setLoading(false);
+      }
     } catch {
       setError('Something went wrong. Please try again.');
       setLoading(false);
