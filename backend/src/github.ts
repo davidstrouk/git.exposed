@@ -1,4 +1,4 @@
-import { mkdtemp } from 'node:fs/promises';
+import { mkdtemp, readdir, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { Readable } from 'node:stream';
@@ -42,6 +42,8 @@ export async function downloadRepo(owner: string, repo: string): Promise<string>
   try {
     await fetchAndExtract(`https://github.com/${owner}/${repo}/archive/refs/heads/main.tar.gz`, dir);
   } catch {
+    const entries = await readdir(dir);
+    await Promise.all(entries.map((e) => rm(path.join(dir, e), { recursive: true, force: true })));
     await fetchAndExtract(`https://github.com/${owner}/${repo}/archive/refs/heads/master.tar.gz`, dir);
   }
 

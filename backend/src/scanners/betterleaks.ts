@@ -1,13 +1,7 @@
 import { execSync } from 'node:child_process';
+import type { Finding } from './types';
 
-export interface Finding {
-  checkName: string;
-  severity: 'critical' | 'high' | 'medium' | 'low' | 'info';
-  title: string;
-  description: string;
-  file: string;
-  line?: number;
-}
+export type { Finding };
 
 interface BetterleaksResult {
   Description: string;

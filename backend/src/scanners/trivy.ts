@@ -1,5 +1,5 @@
 import { execSync } from 'node:child_process';
-import type { Finding } from './betterleaks';
+import type { Finding } from './types';
 
 interface TrivyVuln {
   VulnerabilityID: string;

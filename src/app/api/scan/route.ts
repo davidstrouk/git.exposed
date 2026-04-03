@@ -11,8 +11,14 @@ const SCANNER_URL = process.env.SCANNER_BACKEND_URL;
 const SCAN_SECRET = process.env.SCAN_SECRET || '';
 
 export async function POST(request: Request) {
-  const { url } = await request.json();
+  let body: { url?: string };
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
 
+  const { url } = body;
   if (!url || typeof url !== 'string') {
     return NextResponse.json({ error: 'URL is required' }, { status: 400 });
   }

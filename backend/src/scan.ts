@@ -6,7 +6,7 @@ import { runBetterleaks } from './scanners/betterleaks';
 import { runOpengrep } from './scanners/opengrep';
 import { runTrivy } from './scanners/trivy';
 import { rm } from 'node:fs/promises';
-import type { Finding } from './scanners/betterleaks';
+import type { Finding } from './scanners/types';
 
 const DEDUCTIONS: Record<string, number> = { critical: 25, high: 15, medium: 8, low: 3, info: 0 };
 
@@ -31,11 +31,10 @@ export async function runDeepScan(scanId: string, owner: string, repo: string) {
 
     dir = await downloadRepo(owner, repo);
 
-    const [secrets, sast, deps] = await Promise.all([
-      Promise.resolve(runBetterleaks(dir)),
-      Promise.resolve(runOpengrep(dir)),
-      Promise.resolve(runTrivy(dir)),
-    ]);
+    // Scanners use execSync (blocking) — run sequentially, no fake parallelism
+    const secrets = runBetterleaks(dir);
+    const sast = runOpengrep(dir);
+    const deps = runTrivy(dir);
 
     const allFindings = [...secrets, ...sast, ...deps];
     const score = calculateScore(allFindings);
