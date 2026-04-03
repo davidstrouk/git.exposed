@@ -1,0 +1,24 @@
+{
+  "name": "@repo/shared",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./db": "./src/db/index.ts",
+    "./db/schema": "./src/db/schema.ts",
+    "./types": "./src/types.ts",
+    "./scoring": "./src/scoring.ts",
+    "./github": "./src/github.ts",
+    "./validation": "./src/validation.ts"
+  },
+  "dependencies": {
+    "@auth/core": "^0.37.0",
+    "@neondatabase/serverless": "^1.0.2",
+    "drizzle-orm": "^0.45.2",
+    "tar": "^7.5.13"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "typescript": "^5"
+  }
+}

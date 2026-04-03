@@ -1,0 +1,23 @@
+{
+  "name": "@repo/api",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "echo 'no build step — tsx runs source directly'",
+    "start": "npx tsx src/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.19.12",
+    "@repo/shared": "workspace:*",
+    "hono": "^4.12.10",
+    "tsx": "^4.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^5",
+    "vitest": "^4.1.2"
+  }
+}
