@@ -48,3 +48,4 @@ next-env.d.ts
 
 # local plans
 docs/plans/
+firebase-debug.log
