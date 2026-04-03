@@ -16,6 +16,18 @@ export const metadata: Metadata = {
   title: 'git.exposed — Is your code exposed?',
   description:
     'Scan any public GitHub repo for security vulnerabilities, exposed secrets, and code quality issues. Get a Vibe Safety Score in seconds.',
+  metadataBase: new URL('https://git.exposed'),
+  openGraph: {
+    title: 'git.exposed — Is your code exposed?',
+    description: 'Scan any public GitHub repo for security vulnerabilities, exposed secrets, and code quality issues.',
+    siteName: 'git.exposed',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'git.exposed — Is your code exposed?',
+    description: 'Scan any public GitHub repo for security vulnerabilities, exposed secrets, and code quality issues.',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

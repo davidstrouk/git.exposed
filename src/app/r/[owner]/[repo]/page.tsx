@@ -18,12 +18,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!scan) return { title: `${owner}/${repo} — git.exposed` };
 
+  const pageTitle = `${scan.grade} (${scan.score}/100) — ${owner}/${repo} — git.exposed`;
+  const summary = `${scan.findingsCount} security issues found. Vibe Safety Score: ${scan.score}/100.`;
+
   return {
-    title: `${scan.grade} (${scan.score}/100) — ${owner}/${repo} — git.exposed`,
+    title: pageTitle,
     description: `Vibe Safety Score: ${scan.score}/100 (${scan.grade}). ${scan.findingsCount} issues found.`,
     openGraph: {
       title: `${owner}/${repo} scored ${scan.grade} on git.exposed`,
-      description: `${scan.findingsCount} security issues found. Vibe Safety Score: ${scan.score}/100.`,
+      description: summary,
+      siteName: 'git.exposed',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${owner}/${repo} scored ${scan.grade} on git.exposed`,
+      description: summary,
     },
   };
 }
