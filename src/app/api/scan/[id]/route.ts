@@ -17,6 +17,6 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
     score: scan.score,
     grade: scan.grade,
     findingsCount: scan.findingsCount,
-    reportUrl: `/r/${scan.repoOwner}/${scan.repoName}`,
+    reportUrl: `/${scan.repoOwner}/${scan.repoName}`,
   });
 }

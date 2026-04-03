@@ -63,6 +63,6 @@ export async function POST(request: Request) {
     score: result.score,
     grade: result.grade,
     findingsCount: result.findingsCount,
-    reportUrl: `/r/${info.owner}/${info.repo}`,
+    reportUrl: `/${info.owner}/${info.repo}`,
   });
 }
