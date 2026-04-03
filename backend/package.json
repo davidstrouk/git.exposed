@@ -14,11 +14,11 @@
     "@neondatabase/serverless": "^1.0.2",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.10",
-    "tar": "^7.5.13"
+    "tar": "^7.5.13",
+    "tsx": "^4.21.0"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
-    "tsx": "^4.21.0",
     "typescript": "^6.0.2",
     "vitest": "^4.1.2"
   }
