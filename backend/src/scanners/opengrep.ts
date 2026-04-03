@@ -1,5 +1,5 @@
-import { execSync } from 'node:child_process';
 import type { Finding } from './types';
+import { runCliScanner } from './run-cli';
 
 interface OpengrepResult {
   check_id: string;
@@ -35,14 +35,8 @@ export function parseOpengrepOutput(output: string): Finding[] {
 }
 
 export function runOpengrep(directory: string): Finding[] {
-  try {
-    const output = execSync(
-      `opengrep scan --config auto --json "${directory}"`,
-      { encoding: 'utf-8', timeout: 60000, maxBuffer: 20 * 1024 * 1024 },
-    );
-    return parseOpengrepOutput(output);
-  } catch (err: any) {
-    if (err.stdout) return parseOpengrepOutput(err.stdout);
-    return [];
-  }
+  return runCliScanner({
+    command: `opengrep scan --config auto --json "${directory}"`,
+    parser: parseOpengrepOutput,
+  });
 }

@@ -1,6 +1,7 @@
 import type { Check, Finding, Severity } from '../types';
-import { readdir, readFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { walk } from './walk';
 
 interface Pattern { name: string; regex: RegExp; severity: Severity; description: string; }
 
@@ -12,21 +13,6 @@ const PATTERNS: Pattern[] = [
   { name: 'JWT Token', regex: /eyJ[A-Za-z0-9-_]+\.eyJ[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+/, severity: 'high', description: 'Hardcoded JWT token found. Tokens should be in environment variables.' },
   { name: 'Generic API Key', regex: /(?:api_key|apikey|api_secret|secret_key|private_key)\s*[:=]\s*["'][A-Za-z0-9+/=]{20,}["']/i, severity: 'high', description: 'Possible API key or secret hardcoded in source code.' },
 ];
-
-const SKIP_DIRS = new Set(['node_modules', '.git', 'dist', '.next', 'build', 'coverage', '__pycache__', '.venv']);
-const CODE_EXTS = new Set(['.js', '.ts', '.jsx', '.tsx', '.py', '.rb', '.go', '.java', '.env', '.json', '.yaml', '.yml', '.toml', '.sh']);
-
-async function walk(dir: string): Promise<string[]> {
-  const files: string[] = [];
-  const entries = await readdir(dir, { withFileTypes: true });
-  for (const e of entries) {
-    if (SKIP_DIRS.has(e.name)) continue;
-    const full = path.join(dir, e.name);
-    if (e.isDirectory()) files.push(...await walk(full));
-    else if (CODE_EXTS.has(path.extname(e.name))) files.push(full);
-  }
-  return files;
-}
 
 export const secretsCheck: Check = {
   name: 'secrets',

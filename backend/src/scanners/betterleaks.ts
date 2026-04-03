@@ -1,7 +1,5 @@
-import { execSync } from 'node:child_process';
 import type { Finding } from './types';
-
-export type { Finding };
+import { runCliScanner } from './run-cli';
 
 interface BetterleaksResult {
   Description: string;
@@ -31,14 +29,9 @@ export function parseBetterleaksOutput(output: string): Finding[] {
 }
 
 export function runBetterleaks(directory: string): Finding[] {
-  try {
-    const output = execSync(
-      `betterleaks detect --source="${directory}" --report-format=json --no-git`,
-      { encoding: 'utf-8', timeout: 30000, maxBuffer: 10 * 1024 * 1024 },
-    );
-    return parseBetterleaksOutput(output);
-  } catch (err: any) {
-    if (err.stdout) return parseBetterleaksOutput(err.stdout);
-    return [];
-  }
+  return runCliScanner({
+    command: `betterleaks detect --source="${directory}" --report-format=json --no-git`,
+    timeout: 30000,
+    parser: parseBetterleaksOutput,
+  });
 }

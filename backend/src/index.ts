@@ -22,6 +22,12 @@ app.post('/scan', async (c) => {
     return c.json({ error: 'scanId, owner, repo required' }, 400);
   }
 
+  // Validate owner/repo format to prevent path traversal
+  const validName = /^[\w.-]+$/;
+  if (!validName.test(owner) || !validName.test(repo)) {
+    return c.json({ error: 'Invalid owner or repo name' }, 400);
+  }
+
   await runDeepScan(scanId, owner, repo);
 
   return c.json({ status: 'complete' });

@@ -1,5 +1,5 @@
-import { execSync } from 'node:child_process';
 import type { Finding } from './types';
+import { runCliScanner } from './run-cli';
 
 interface TrivyVuln {
   VulnerabilityID: string;
@@ -46,14 +46,8 @@ export function parseTrivyOutput(output: string): Finding[] {
 }
 
 export function runTrivy(directory: string): Finding[] {
-  try {
-    const output = execSync(
-      `trivy fs --format json --scanners vuln,secret "${directory}"`,
-      { encoding: 'utf-8', timeout: 60000, maxBuffer: 20 * 1024 * 1024 },
-    );
-    return parseTrivyOutput(output);
-  } catch (err: any) {
-    if (err.stdout) return parseTrivyOutput(err.stdout);
-    return [];
-  }
+  return runCliScanner({
+    command: `trivy fs --format json --scanners vuln,secret "${directory}"`,
+    parser: parseTrivyOutput,
+  });
 }
