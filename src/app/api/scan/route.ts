@@ -7,6 +7,9 @@ import { runScan } from '@/scanner/run-scan';
 
 export const maxDuration = 60;
 
+const SCANNER_URL = process.env.SCANNER_BACKEND_URL;
+const SCAN_SECRET = process.env.SCAN_SECRET || '';
+
 export async function POST(request: Request) {
   const { url } = await request.json();
 
@@ -25,8 +28,26 @@ export async function POST(request: Request) {
     repoUrl: url,
   }).returning();
 
-  // Run scan synchronously — wait for completion before responding
-  await runScan(scan.id, info.owner, info.repo);
+  if (SCANNER_URL) {
+    // Phase 2: delegate to scanning backend (Betterleaks + OpenGrep + Trivy)
+    try {
+      const res = await fetch(`${SCANNER_URL}/scan`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${SCAN_SECRET}`,
+        },
+        body: JSON.stringify({ scanId: scan.id, owner: info.owner, repo: info.repo }),
+      });
+      if (!res.ok) throw new Error(`Scanner returned ${res.status}`);
+    } catch (error) {
+      console.error('Scanner backend error, falling back to built-in:', error);
+      await runScan(scan.id, info.owner, info.repo);
+    }
+  } else {
+    // Phase 1 fallback: built-in regex checks on Vercel
+    await runScan(scan.id, info.owner, info.repo);
+  }
 
   const [result] = await db.select().from(scans).where(eq(scans.id, scan.id));
 
