@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# git.exposed
 
-## Getting Started
+**Is your code exposed?**
 
-First, run the development server:
+Paste any public GitHub URL. Get a security report in seconds. Share the results.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## What It Checks
+
+| Check | Finds |
+|-------|-------|
+| **Secrets** | Exposed API keys (AWS, Stripe, GitHub), tokens, webhooks |
+| **Security Patterns** | XSS (eval, innerHTML), SQL injection, command injection |
+| **Dependencies** | Missing lockfiles, unpinned versions |
+
+## Try It
+
+Visit **[git.exposed](https://git.exposed)** and paste a GitHub URL.
+
+Or add a badge to your README:
+
+```markdown
+![git.exposed](https://git.exposed/badge/YOUR_USERNAME/YOUR_REPO)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Self-Host
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+git clone https://github.com/gitexposed/git-exposed
+cd git-exposed
+cp .env.example .env  # Add your Neon DATABASE_URL
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Scoring
 
-## Learn More
+| Grade | Score | Meaning |
+|-------|-------|---------|
+| A | 90-100 | Ship it! |
+| B | 80-89 | Minor issues |
+| C | 70-79 | Needs attention |
+| D | 50-69 | Significant problems |
+| F | 0-49 | Do not deploy |
 
-To learn more about Next.js, take a look at the following resources:
+## Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Framework:** Next.js 15 (App Router)
+- **Database:** Neon PostgreSQL + Drizzle ORM
+- **Scanning:** Built-in TypeScript checks (Phase 1), Betterleaks + OpenGrep + Trivy (Phase 2)
+- **Deployment:** Vercel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## License
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
