@@ -10,9 +10,9 @@ describe('secretsCheck', () => {
     const f = await secretsCheck.run(VULN);
     expect(f.some(x => x.title.includes('AWS'))).toBe(true);
   });
-  it('detects Stripe keys', async () => {
+  it('detects Slack webhooks', async () => {
     const f = await secretsCheck.run(VULN);
-    expect(f.some(x => x.title.includes('Stripe'))).toBe(true);
+    expect(f.some(x => x.title.includes('Slack'))).toBe(true);
   });
   it('detects GitHub tokens', async () => {
     const f = await secretsCheck.run(VULN);
