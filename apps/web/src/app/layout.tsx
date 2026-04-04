@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
 import { Providers } from '@/components/providers';
 import { UserMenu } from '@/components/user-menu';
 import './globals.css';
@@ -54,6 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </header>
           {children}
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
