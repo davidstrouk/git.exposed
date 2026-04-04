@@ -41,7 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to content
         </a>
         <Providers>
-          <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4">
+          <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 backdrop-blur-md bg-background/70 border-b border-ds-border/10">
             <Link href="/" className="text-lg font-bold text-slate-200">
               git.<span className="text-red-500">exposed</span>
             </Link>

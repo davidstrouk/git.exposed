@@ -35,7 +35,7 @@ async function getRepoVisibility(
 
 function PageShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-background text-slate-200">
+    <div className="min-h-dvh bg-background text-slate-200">
       <div className="max-w-3xl mx-auto px-6 py-12">
         <header className="text-center mb-10">
           <h1 className="text-lg text-slate-400 mb-6">git.exposed</h1>
@@ -141,7 +141,7 @@ export default async function ReportPage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-background text-slate-200">
+    <div className="min-h-dvh bg-background text-slate-200">
       <div className="max-w-3xl mx-auto px-6 py-12">
         <header className="text-center mb-10">
           <h1 className="text-lg text-slate-400 mb-6">git.exposed</h1>

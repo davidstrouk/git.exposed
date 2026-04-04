@@ -57,98 +57,140 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-slate-200 flex flex-col items-center justify-center px-6">
-      <main className="max-w-2xl w-full text-center">
-        <h1 className="text-5xl font-extrabold tracking-tight mb-4 hero-glow">
-          git.<span className="text-red-500">exposed</span>
-        </h1>
-        <p className="text-xl text-slate-300 mb-2">
-          Find exposed secrets and vulnerabilities in any GitHub repo.
-        </p>
-        <p className="text-sm text-slate-400 mb-10">
-          150+ secret patterns &middot; 3,000+ security rules &middot; Real CVE database
-        </p>
+    <div className="min-h-dvh bg-background text-slate-200 flex items-center px-6">
+      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-center py-20">
 
-        <form onSubmit={handleScan} className="flex gap-3 mb-4">
-          <input
-            type="url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="https://github.com/owner/repo"
-            required
-            aria-label="GitHub repository URL"
-            className="flex-1 bg-ds-primary border border-ds-border rounded-lg px-4 py-3 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            aria-label="Scan repository"
-            className="bg-green-600 hover:bg-green-500 disabled:bg-slate-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors flex items-center gap-2"
-          >
-            {loading ? (
-              <>
-                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                </svg>
-                Scanning...
-              </>
-            ) : 'Scan'}
-          </button>
-        </form>
+        {/* Left column — messaging */}
+        <div>
+          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tighter leading-none mb-6 hero-glow">
+            git.<span className="text-red-500">exposed</span>
+          </h1>
+          <p className="text-lg md:text-xl text-slate-300 leading-relaxed mb-3 max-w-[50ch]">
+            Find exposed secrets and vulnerabilities in any GitHub repo.
+          </p>
+          <p className="text-sm text-slate-400 mb-8">
+            150+ secret patterns &middot; 3,000+ security rules &middot; Real CVE database
+          </p>
 
-        {/* Quick-start examples — reduce activation energy */}
-        <div className="flex gap-2 justify-center flex-wrap mb-6">
-          <span className="text-xs text-slate-600">Try:</span>
-          {['expressjs/express', 'facebook/react', 'vercel/next.js'].map((repo) => (
+          <form onSubmit={handleScan} className="flex gap-3 mb-4">
+            <input
+              type="url"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="https://github.com/owner/repo"
+              required
+              aria-label="GitHub repository URL"
+              className="flex-1 bg-ds-primary border border-ds-border rounded-lg px-4 py-3 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-green-500/60 focus:border-transparent transition-all duration-200"
+            />
             <button
-              key={repo}
-              onClick={() => { setUrl(`https://github.com/${repo}`); }}
-              className="text-xs text-slate-500 hover:text-red-400 transition-colors"
+              type="submit"
+              disabled={loading}
+              aria-label="Scan repository"
+              className="bg-green-600 hover:bg-green-500 disabled:bg-slate-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 active:scale-[0.97] flex items-center gap-2 shadow-[0_4px_14px_rgba(34,197,94,0.25)] hover:shadow-[0_6px_20px_rgba(34,197,94,0.35)]"
             >
-              {repo}
+              {loading ? (
+                <>
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  Scanning...
+                </>
+              ) : 'Scan'}
             </button>
-          ))}
+          </form>
+
+          {/* Quick-start examples */}
+          <div className="flex gap-3 flex-wrap mb-6">
+            <span className="text-xs text-slate-500">Try:</span>
+            {['expressjs/express', 'facebook/react', 'vercel/next.js'].map((repo) => (
+              <button
+                key={repo}
+                onClick={() => setUrl(`https://github.com/${repo}`)}
+                className="text-xs text-slate-500 hover:text-green-400 transition-colors duration-150 font-mono active:scale-[0.97]"
+              >
+                {repo}
+              </button>
+            ))}
+          </div>
+
+          {error && (
+            <div className="mb-4">
+              <p className="text-red-400 text-sm">{error}</p>
+              {!session && error.includes('Sign in') && (
+                <button
+                  onClick={() => signIn('github')}
+                  className="mt-2 text-sm text-red-400 hover:text-red-300 underline transition-colors duration-150"
+                >
+                  Sign in with GitHub
+                </button>
+              )}
+            </div>
+          )}
+
+          {showUpgrade && (
+            <div className="mb-4 bg-ds-muted/60 border border-amber-500/20 rounded-xl p-5">
+              <p className="text-amber-400 text-sm font-medium mb-1">
+                Private repos need Pro to scan
+              </p>
+              <p className="text-slate-400 text-xs mb-3">
+                Exposed credentials in private repos are the #1 cause of data breaches.
+              </p>
+              <a
+                href="/api/checkout"
+                className="inline-block bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold text-sm px-4 py-2 rounded-lg transition-all duration-200 active:scale-[0.97]"
+              >
+                Upgrade to Pro — $19/mo
+              </a>
+            </div>
+          )}
+
+          <p className="text-sm text-slate-400">
+            Free for public repos &middot; No signup required
+            {scanCount !== null && (
+              <span> &middot; {scanCount.toLocaleString()} repos scanned</span>
+            )}
+          </p>
         </div>
 
-        {error && (
-          <div className="mb-4">
-            <p className="text-red-400 text-sm">{error}</p>
-            {!session && error.includes('Sign in') && (
-              <button
-                onClick={() => signIn('github')}
-                className="mt-2 text-sm text-red-400 hover:text-red-300 underline"
-              >
-                Sign in with GitHub
-              </button>
-            )}
-          </div>
-        )}
+        {/* Right column — visual element */}
+        <div className="hidden md:flex items-center justify-center">
+          <div className="relative">
+            {/* Terminal-style preview card */}
+            <div className="bg-ds-muted/80 border border-ds-border/40 rounded-2xl p-6 w-[340px] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.4)]">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-3 h-3 rounded-full bg-red-500/80" />
+                <div className="w-3 h-3 rounded-full bg-amber-500/80" />
+                <div className="w-3 h-3 rounded-full bg-green-500/80" />
+                <span className="text-xs text-slate-500 ml-2 font-mono">scan results</span>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-[0.6rem] font-bold uppercase px-1.5 py-0.5 rounded bg-red-600 text-white">critical</span>
+                  <span className="text-sm text-slate-300">Hardcoded API key</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[0.6rem] font-bold uppercase px-1.5 py-0.5 rounded bg-orange-600 text-white">high</span>
+                  <span className="text-sm text-slate-300">SQL injection risk</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[0.6rem] font-bold uppercase px-1.5 py-0.5 rounded bg-yellow-600 text-white">medium</span>
+                  <span className="text-sm text-slate-300">Outdated dependency</span>
+                </div>
+              </div>
+              <div className="mt-4 pt-3 border-t border-ds-border/30">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-slate-500">Score</span>
+                  <span className="text-sm font-bold text-red-500 font-mono">F — 12/100</span>
+                </div>
+              </div>
+            </div>
 
-        {showUpgrade && (
-          <div className="mb-4 bg-slate-800/50 border border-amber-500/30 rounded-lg p-4">
-            <p className="text-amber-400 text-sm font-medium mb-1">
-              Private repos need Pro to scan
-            </p>
-            <p className="text-slate-400 text-xs mb-3">
-              Exposed credentials in private repos are the #1 cause of data breaches.
-            </p>
-            <a
-              href="/api/checkout"
-              className="inline-block bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold text-sm px-4 py-2 rounded-lg transition-colors"
-            >
-              Upgrade to Pro — $19/mo
-            </a>
+            {/* Decorative glow behind card */}
+            <div className="absolute -inset-8 bg-red-500/5 blur-3xl rounded-full -z-10" />
           </div>
-        )}
-
-        <p className="text-sm text-slate-400">
-          Free for public repos &middot; No signup required
-          {scanCount !== null && (
-            <span> &middot; {scanCount.toLocaleString()} repos scanned</span>
-          )}
-        </p>
-      </main>
+        </div>
+      </div>
     </div>
   );
 }
