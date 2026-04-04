@@ -46,6 +46,6 @@ next-env.d.ts
 # turbo
 .turbo/
 
-# local plans
-docs/plans/
+# local docs (plans, marketing drafts)
+docs/
 firebase-debug.log
