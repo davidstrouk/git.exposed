@@ -49,3 +49,5 @@ next-env.d.ts
 # local docs (plans, marketing drafts)
 docs/
 firebase-debug.log
+test-results/
+test-results/
