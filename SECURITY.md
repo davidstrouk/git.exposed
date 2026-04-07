@@ -6,7 +6,7 @@ If you discover a security vulnerability in git.exposed, please report it respon
 
 **Do not open a public GitHub issue for security vulnerabilities.**
 
-Instead, please use [GitHub's private vulnerability reporting](https://github.com/davidstrouk/git.exposed/security/advisories/new) to submit your report. This ensures the issue can be addressed before public disclosure.
+Instead, please use [GitHub's private vulnerability reporting](https://github.com/mama-sh/git.exposed/security/advisories/new) to submit your report. This ensures the issue can be addressed before public disclosure.
 
 ### What to include
 

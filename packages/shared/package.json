@@ -12,7 +12,6 @@
     "./validation": "./src/validation.ts"
   },
   "dependencies": {
-    "@auth/core": "^0.37.0",
     "@neondatabase/serverless": "^1.0.2",
     "drizzle-orm": "^0.45.2",
     "tar": "^7.5.13"

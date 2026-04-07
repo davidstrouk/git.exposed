@@ -1,62 +1,6 @@
-import { pgTable, uuid, text, integer, timestamp, pgEnum, primaryKey } from 'drizzle-orm/pg-core';
-import type { AdapterAccountType } from '@auth/core/adapters';
+import { pgTable, uuid, text, integer, timestamp, pgEnum } from 'drizzle-orm/pg-core';
 
-// --- Auth tables (Auth.js / Drizzle adapter) ---
-
-export const users = pgTable('user', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  name: text('name'),
-  email: text('email').unique(),
-  emailVerified: timestamp('emailVerified', { mode: 'date' }),
-  image: text('image'),
-});
-
-export const accounts = pgTable('account', {
-  userId: text('userId').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  type: text('type').$type<AdapterAccountType>().notNull(),
-  provider: text('provider').notNull(),
-  providerAccountId: text('providerAccountId').notNull(),
-  refresh_token: text('refresh_token'),
-  access_token: text('access_token'),
-  expires_at: integer('expires_at'),
-  token_type: text('token_type'),
-  scope: text('scope'),
-  id_token: text('id_token'),
-  session_state: text('session_state'),
-}, (account) => [
-  primaryKey({ columns: [account.provider, account.providerAccountId] }),
-]);
-
-export const sessions = pgTable('session', {
-  sessionToken: text('sessionToken').primaryKey(),
-  userId: text('userId').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  expires: timestamp('expires', { mode: 'date' }).notNull(),
-});
-
-export const verificationTokens = pgTable('verificationToken', {
-  identifier: text('identifier').notNull(),
-  token: text('token').notNull(),
-  expires: timestamp('expires', { mode: 'date' }).notNull(),
-}, (vt) => [
-  primaryKey({ columns: [vt.identifier, vt.token] }),
-]);
-
-// --- Subscription table (Lemon Squeezy billing) ---
-
-export const subscriptions = pgTable('subscription', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  lsCustomerId: text('ls_customer_id'),
-  lsSubscriptionId: text('ls_subscription_id').unique(),
-  variantId: text('variant_id'),
-  status: text('status').notNull().default('active'),
-  currentPeriodEnd: timestamp('current_period_end'),
-  customerPortalUrl: text('customer_portal_url'),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
-});
-
-// --- Scan tables (existing) ---
+// --- Scan tables ---
 
 export const scanStatusEnum = pgEnum('scan_status', ['pending', 'scanning', 'complete', 'failed']);
 export const severityEnum = pgEnum('severity', ['critical', 'high', 'medium', 'low', 'info']);
@@ -84,31 +28,4 @@ export const findings = pgTable('findings', {
   description: text('description').notNull(),
   file: text('file').notNull(),
   line: integer('line'),
-});
-
-// --- Fix jobs table (AI-generated PR tracking) ---
-
-export const fixStatusEnum = pgEnum('fix_status', ['pending', 'running', 'complete', 'failed']);
-
-export const fixJobs = pgTable('fix_jobs', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  scanId: uuid('scan_id').notNull().references(() => scans.id),
-  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  findingIds: text('finding_ids').notNull(),
-  status: fixStatusEnum('status').notNull().default('pending'),
-  prUrl: text('pr_url'),
-  error: text('error'),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  completedAt: timestamp('completed_at'),
-});
-
-// --- Monitored repos table (webhook tracking for continuous monitoring) ---
-
-export const monitoredRepos = pgTable('monitored_repos', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  repoOwner: text('repo_owner').notNull(),
-  repoName: text('repo_name').notNull(),
-  webhookId: integer('webhook_id').notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
 });

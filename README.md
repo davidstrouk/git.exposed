@@ -8,8 +8,8 @@
     <a href="#architecture">Architecture</a>
   </p>
 
-  ![CI](https://github.com/davidstrouk/git.exposed/actions/workflows/ci.yml/badge.svg)
-  ![License](https://img.shields.io/github/license/davidstrouk/git.exposed)
+  ![CI](https://github.com/mama-sh/git.exposed/actions/workflows/ci.yml/badge.svg)
+  ![License](https://img.shields.io/github/license/mama-sh/git.exposed)
 </div>
 
 ---
@@ -53,7 +53,7 @@ Each repo gets a **Vibe Safety Score** (0-100) and a letter grade (A-F).
 ### Setup
 
 ```bash
-git clone https://github.com/davidstrouk/git.exposed.git
+git clone https://github.com/mama-sh/git.exposed.git
 cd git.exposed
 pnpm install
 cp .env.example .env

@@ -2,16 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession, signIn } from 'next-auth/react';
 
 export default function Home() {
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showUpgrade, setShowUpgrade] = useState(false);
   const [scanCount, setScanCount] = useState<number | null>(null);
   const router = useRouter();
-  const { data: session } = useSession();
 
   useEffect(() => {
     fetch('/api/scan/count').then((r) => r.json()).then((d) => setScanCount(d.count)).catch(() => {});
@@ -20,7 +17,6 @@ export default function Home() {
   async function handleScan(e: React.FormEvent) {
     e.preventDefault();
     setError('');
-    setShowUpgrade(false);
     setLoading(true);
 
     try {
@@ -32,14 +28,7 @@ export default function Home() {
 
       const data = await res.json();
       if (!res.ok) {
-        if (res.status === 401 && !session) {
-          setError('Sign in with GitHub to scan private repositories.');
-        } else if (res.status === 403 && data.upgrade) {
-          setShowUpgrade(true);
-          setError('');
-        } else {
-          setError(data.error);
-        }
+        setError(data.error);
         setLoading(false);
         return;
       }
@@ -115,34 +104,7 @@ export default function Home() {
           </div>
 
           {error && (
-            <div className="mb-4">
-              <p className="text-red-400 text-sm">{error}</p>
-              {!session && error.includes('Sign in') && (
-                <button
-                  onClick={() => signIn('github')}
-                  className="mt-2 text-sm text-red-400 hover:text-red-300 underline transition-colors duration-150"
-                >
-                  Sign in with GitHub
-                </button>
-              )}
-            </div>
-          )}
-
-          {showUpgrade && (
-            <div className="mb-4 bg-ds-muted/60 border border-amber-500/20 rounded-xl p-5">
-              <p className="text-amber-400 text-sm font-medium mb-1">
-                Private repos need Pro to scan
-              </p>
-              <p className="text-slate-400 text-xs mb-3">
-                Exposed credentials in private repos are the #1 cause of data breaches.
-              </p>
-              <a
-                href="/api/checkout"
-                className="inline-block bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold text-sm px-4 py-2 rounded-lg transition-all duration-200 active:scale-[0.97]"
-              >
-                Upgrade to Pro - $19/mo
-              </a>
-            </div>
+            <p className="text-red-400 text-sm mb-4">{error}</p>
           )}
 
           <p className="text-sm text-slate-400">

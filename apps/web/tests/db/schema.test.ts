@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { scans, findings, fixJobs, monitoredRepos } from '@repo/shared/db/schema';
+import { scans, findings } from '@repo/shared/db/schema';
 
 describe('database schema', () => {
   it('scans table has required columns', () => {
@@ -25,28 +25,5 @@ describe('database schema', () => {
     expect(columns).toContain('file');
     expect(columns).toContain('line');
     expect(columns).toContain('checkName');
-  });
-
-  it('fixJobs table has required columns', () => {
-    const columns = Object.keys(fixJobs);
-    expect(columns).toContain('id');
-    expect(columns).toContain('scanId');
-    expect(columns).toContain('userId');
-    expect(columns).toContain('findingIds');
-    expect(columns).toContain('status');
-    expect(columns).toContain('prUrl');
-    expect(columns).toContain('error');
-    expect(columns).toContain('createdAt');
-    expect(columns).toContain('completedAt');
-  });
-
-  it('monitoredRepos table has required columns', () => {
-    const columns = Object.keys(monitoredRepos);
-    expect(columns).toContain('id');
-    expect(columns).toContain('userId');
-    expect(columns).toContain('repoOwner');
-    expect(columns).toContain('repoName');
-    expect(columns).toContain('webhookId');
-    expect(columns).toContain('createdAt');
   });
 });

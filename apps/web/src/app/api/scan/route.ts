@@ -1,51 +1,19 @@
 import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
-import { Octokit } from '@octokit/rest';
 import { db } from '@repo/shared/db';
-import { scans, accounts, subscriptions, monitoredRepos } from '@repo/shared/db/schema';
+import { scans } from '@repo/shared/db/schema';
 import { eq, and, desc, gt } from 'drizzle-orm';
 import { parseGitHubUrl } from '@repo/shared/github';
 import { isValidRepoName } from '@repo/shared/validation';
 import { runScan } from '@/scanner/run-scan';
 import { rateLimit } from '@/lib/rate-limit';
-import { auth } from '@/lib/auth';
 
 export const maxDuration = 60;
 
 const SCANNER_URL = process.env.SCANNER_BACKEND_URL;
 const SCAN_SECRET = process.env.SCAN_SECRET || '';
 
-async function isRepoPublic(owner: string, repo: string): Promise<boolean> {
-  try {
-    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
-      headers: { Accept: 'application/vnd.github+json' },
-    });
-    if (!res.ok) return false;
-    const data = await res.json();
-    return !data.private;
-  } catch {
-    return false;
-  }
-}
-
-async function getUserGitHubToken(userId: string): Promise<string | null> {
-  const [account] = await db.select()
-    .from(accounts)
-    .where(and(eq(accounts.userId, userId), eq(accounts.provider, 'github')))
-    .limit(1);
-  return account?.access_token || null;
-}
-
-async function hasProSubscription(userId: string): Promise<boolean> {
-  const [sub] = await db.select()
-    .from(subscriptions)
-    .where(and(eq(subscriptions.userId, userId), eq(subscriptions.status, 'active')))
-    .limit(1);
-  return !!sub;
-}
-
 export async function POST(request: Request) {
-  // Rate limit: 5 scans per minute per IP
   const headersList = await headers();
   const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
   const { allowed, remaining } = rateLimit(ip, 5, 60_000);
@@ -77,38 +45,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid owner or repo name' }, { status: 400 });
   }
 
-  // Check if repo is public or private
-  const isPublic = await isRepoPublic(info.owner, info.repo);
-  let accessToken: string | undefined;
-
-  if (!isPublic) {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: 'Sign in with GitHub to scan private repositories.' },
-        { status: 401 },
-      );
-    }
-
-    const isPro = await hasProSubscription(session.user.id);
-    if (!isPro) {
-      return NextResponse.json(
-        { error: 'Private repo scanning requires a Pro subscription.', upgrade: true },
-        { status: 403 },
-      );
-    }
-
-    const token = await getUserGitHubToken(session.user.id);
-    if (!token) {
-      return NextResponse.json(
-        { error: 'GitHub access token not found. Please sign out and sign in again.' },
-        { status: 401 },
-      );
-    }
-    accessToken = token;
-  }
-
-  // Deduplication: return recent scan if same repo scanned in last 5 minutes
   const fiveMinAgo = new Date(Date.now() - 5 * 60_000);
   const [recent] = await db.select().from(scans)
     .where(and(
@@ -138,7 +74,6 @@ export async function POST(request: Request) {
   }).returning();
 
   if (SCANNER_URL) {
-    // Delegate to scanning backend (Betterleaks + OpenGrep + Trivy)
     try {
       const res = await fetch(`${SCANNER_URL}/scan`, {
         method: 'POST',
@@ -146,71 +81,18 @@ export async function POST(request: Request) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${SCAN_SECRET}`,
         },
-        body: JSON.stringify({
-          scanId: scan.id,
-          owner: info.owner,
-          repo: info.repo,
-          ...(accessToken && { accessToken }),
-        }),
+        body: JSON.stringify({ scanId: scan.id, owner: info.owner, repo: info.repo }),
       });
       if (!res.ok) throw new Error(`Scanner returned ${res.status}`);
     } catch (error) {
       console.error('Scanner backend error, falling back to built-in:', error);
-      await runScan(scan.id, info.owner, info.repo, accessToken);
+      await runScan(scan.id, info.owner, info.repo);
     }
   } else {
-    // Fallback: built-in regex checks on Vercel
-    await runScan(scan.id, info.owner, info.repo, accessToken);
+    await runScan(scan.id, info.owner, info.repo);
   }
 
   const [result] = await db.select().from(scans).where(eq(scans.id, scan.id));
-
-  // Auto-install webhook for Pro users
-  if (result.status === 'complete') {
-    try {
-      const monitorSession = await auth();
-      if (monitorSession?.user?.id) {
-        const isPro = await hasProSubscription(monitorSession.user.id);
-        if (isPro) {
-          const [existing] = await db.select().from(monitoredRepos)
-            .where(and(
-              eq(monitoredRepos.repoOwner, info.owner),
-              eq(monitoredRepos.repoName, info.repo),
-              eq(monitoredRepos.userId, monitorSession.user.id),
-            ))
-            .limit(1);
-
-          if (!existing) {
-            const token = await getUserGitHubToken(monitorSession.user.id);
-            const webhookSecret = process.env.GITHUB_WEBHOOK_SECRET;
-            if (token && webhookSecret) {
-              const octokit = new Octokit({ auth: token });
-              const { data: hook } = await octokit.repos.createWebhook({
-                owner: info.owner,
-                repo: info.repo,
-                config: {
-                  url: 'https://git.exposed/api/webhook/github',
-                  content_type: 'json',
-                  secret: webhookSecret,
-                },
-                events: ['push'],
-                active: true,
-              });
-
-              await db.insert(monitoredRepos).values({
-                userId: monitorSession.user.id,
-                repoOwner: info.owner,
-                repoName: info.repo,
-                webhookId: hook.id,
-              });
-            }
-          }
-        }
-      }
-    } catch (err) {
-      console.error('Webhook install failed:', err instanceof Error ? err.message : err);
-    }
-  }
 
   return NextResponse.json({
     id: scan.id,
