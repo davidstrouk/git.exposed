@@ -1,5 +1,5 @@
 {
   "framework": "nextjs",
-  "installCommand": "cd ../.. && pnpm install",
+  "installCommand": "cd ../../.. && cp -r pro/* open-source/ 2>/dev/null || true && cd open-source && pnpm install",
   "buildCommand": "cd ../.. && pnpm turbo build --filter=@repo/web"
 }
