@@ -1,5 +1,5 @@
 {
   "framework": "nextjs",
-  "installCommand": "cd ../../.. && cp -r pro/* open-source/ 2>/dev/null || true && cd open-source && pnpm install --no-frozen-lockfile",
+  "installCommand": "cd ../../.. && cp -r pro/* open-source/ 2>/dev/null || true && cd open-source && rm -rf node_modules apps/*/node_modules packages/*/node_modules && pnpm install --no-frozen-lockfile",
   "buildCommand": "cd ../.. && pnpm turbo build --filter=@repo/web"
 }
