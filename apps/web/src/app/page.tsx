@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { addTransitionType, startTransition, useEffect, useRef, useState, ViewTransition } from 'react';
 import { parseGitHubUrl } from '@/lib/parse-url';
 import { cn } from '@/lib/utils';
@@ -9,7 +9,20 @@ export default function Home() {
   const [url, setUrl] = useState('');
   const [error, setError] = useState('');
   const [scanCount, setScanCount] = useState<number | null>(null);
+  const [showWelcome, setShowWelcome] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Show welcome banner after Pro upgrade
+  useEffect(() => {
+    if (searchParams.get('welcome') === 'pro') {
+      setShowWelcome(true);
+      // Clean URL without reload
+      window.history.replaceState({}, '', '/');
+      const timer = setTimeout(() => setShowWelcome(false), 8000);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams]);
 
   // Scan results card animation state
   const [animPhase, setAnimPhase] = useState(0);
@@ -90,6 +103,16 @@ export default function Home() {
       default="none"
     >
       <div className="min-h-dvh bg-background text-slate-200 flex items-center px-6">
+        {showWelcome && (
+          <div className="fixed top-20 left-1/2 -translate-x-1/2 z-40 bg-green-600/90 backdrop-blur-md text-white px-6 py-3 rounded-lg shadow-lg animate-[fade-in_0.3s_ease-out] flex items-center gap-3">
+            <span className="text-lg">&#10003;</span>
+            <div>
+              <p className="font-semibold text-sm">Welcome to Pro!</p>
+              <p className="text-xs text-green-100">Private repo scanning &amp; AI-powered fixes are now unlocked.</p>
+            </div>
+            <button type="button" onClick={() => setShowWelcome(false)} className="ml-4 text-green-200 hover:text-white text-lg">&times;</button>
+          </div>
+        )}
         <div className="max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-center py-20">
           {/* Left column — messaging */}
           <div>
@@ -129,7 +152,12 @@ export default function Home() {
                 <button
                   type="button"
                   key={repo}
-                  onClick={() => setUrl(`https://github.com/${repo}`)}
+                  onClick={() => {
+                    startTransition(() => {
+                      addTransitionType('nav-forward');
+                      router.push(`/${repo}`);
+                    });
+                  }}
                   className="text-xs text-slate-400 hover:text-green-400 transition-colors duration-150 font-mono active:scale-[0.97]"
                 >
                   {repo}

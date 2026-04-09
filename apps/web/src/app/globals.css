@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+button,
+[role="button"] {
+  cursor: pointer;
+}
+
 :root {
   /* Design system: Dark Mode for security scanner */
   --ds-bg: #0F172A;

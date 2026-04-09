@@ -47,7 +47,10 @@ app.post('/scan', async (c) => {
   return c.json({ status: 'accepted', scanId });
 });
 
-const port = Number(process.env.PORT) || 4000;
+// API_PORT for explicit override; PORT for Railway production (where API_PORT isn't set).
+// Default 4000 for local dev. This avoids PORT=3030 conflicts when both
+// Next.js and Hono run in the same turbo dev session.
+const port = Number(process.env.API_PORT) || (process.env.TURBO_HASH ? 4000 : Number(process.env.PORT) || 4000);
 console.log(`Scanner backend running on port ${port}`);
 serve({ fetch: app.fetch, port });
 
