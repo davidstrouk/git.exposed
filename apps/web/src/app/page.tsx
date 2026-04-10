@@ -1,36 +1,33 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import { addTransitionType, Suspense, startTransition, useEffect, useRef, useState, ViewTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import { addTransitionType, startTransition, useEffect, useRef, useState, ViewTransition } from 'react';
 import { parseGitHubUrl } from '@/lib/parse-url';
 import { cn } from '@/lib/utils';
 
-export default function Home() {
-  return (
-    <Suspense>
-      <HomeInner />
-    </Suspense>
-  );
+function useWelcomeBanner() {
+  // Check ?welcome=pro on mount via window.location (avoids useSearchParams + Suspense)
+  const [show, setShow] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return new URLSearchParams(window.location.search).get('welcome') === 'pro';
+  });
+
+  useEffect(() => {
+    if (!show) return;
+    window.history.replaceState({}, '', '/');
+    const timer = setTimeout(() => setShow(false), 8000);
+    return () => clearTimeout(timer);
+  }, [show]);
+
+  return [show, setShow] as const;
 }
 
-function HomeInner() {
+export default function Home() {
   const [url, setUrl] = useState('');
   const [error, setError] = useState('');
   const [scanCount, setScanCount] = useState<number | null>(null);
-  const [showWelcome, setShowWelcome] = useState(false);
+  const [showWelcome, setShowWelcome] = useWelcomeBanner();
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  // Show welcome banner after Pro upgrade
-  useEffect(() => {
-    if (searchParams.get('welcome') === 'pro') {
-      setShowWelcome(true);
-      // Clean URL without reload
-      window.history.replaceState({}, '', '/');
-      const timer = setTimeout(() => setShowWelcome(false), 8000);
-      return () => clearTimeout(timer);
-    }
-  }, [searchParams]);
 
   // Scan results card animation state
   const [animPhase, setAnimPhase] = useState(0);
