@@ -1,11 +1,20 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import { addTransitionType, startTransition, useEffect, useRef, useState, ViewTransition } from 'react';
 import { parseGitHubUrl } from '@/lib/parse-url';
 import { cn } from '@/lib/utils';
 
 export default function Home() {
+  return (
+    <Suspense>
+      <HomeInner />
+    </Suspense>
+  );
+}
+
+function HomeInner() {
   const [url, setUrl] = useState('');
   const [error, setError] = useState('');
   const [scanCount, setScanCount] = useState<number | null>(null);
