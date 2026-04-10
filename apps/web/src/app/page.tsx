@@ -110,7 +110,13 @@ export default function Home() {
               <p className="font-semibold text-sm">Welcome to Pro!</p>
               <p className="text-xs text-green-100">Private repo scanning &amp; AI-powered fixes are now unlocked.</p>
             </div>
-            <button type="button" onClick={() => setShowWelcome(false)} className="ml-4 text-green-200 hover:text-white text-lg">&times;</button>
+            <button
+              type="button"
+              onClick={() => setShowWelcome(false)}
+              className="ml-4 text-green-200 hover:text-white text-lg"
+            >
+              &times;
+            </button>
           </div>
         )}
         <div className="max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-center py-20">
