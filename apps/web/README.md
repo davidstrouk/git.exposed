@@ -63,12 +63,12 @@ rm .env.production.local
 
 ### If `__drizzle_migrations` is out of sync
 
-If the schema was bootstrapped some other way (e.g. `drizzle-kit push` or hand-run SQL), the tracking table may be empty or incomplete. Back-fill it with one row per already-applied migration before running `migrate`:
+If the schema was bootstrapped some other way (e.g. `drizzle-kit push` or hand-run SQL), the tracking table may be empty or incomplete. Back-fill it with one row per already-applied migration before running `migrate`. From `apps/web`:
 
 ```ts
 // Compute hash the same way drizzle-orm does:
-// crypto.createHash('sha256').update(fs.readFileSync('apps/web/drizzle/<tag>.sql').toString()).digest('hex')
-// `created_at` = the `when` value from meta/_journal.json for that entry
+// crypto.createHash('sha256').update(fs.readFileSync('drizzle/<tag>.sql').toString()).digest('hex')
+// `created_at` = the `when` value from drizzle/meta/_journal.json for that entry
 ```
 
 ```sql
