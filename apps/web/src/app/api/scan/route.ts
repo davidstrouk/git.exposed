@@ -2,7 +2,7 @@ import { db } from '@repo/shared/db';
 import { scans } from '@repo/shared/db/schema';
 import { parseGitHubUrl } from '@repo/shared/github';
 import { isValidRepoName } from '@repo/shared/validation';
-import { and, desc, eq, gt } from 'drizzle-orm';
+import { and, desc, eq, gt, sql } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { rateLimit } from '@/lib/rate-limit';
@@ -85,6 +85,18 @@ export async function POST(request: Request) {
       { headers: { 'X-RateLimit-Remaining': String(remaining) } },
     );
   }
+
+  await db
+    .update(scans)
+    .set({ status: 'failed' })
+    .where(
+      and(
+        eq(scans.repoOwner, info.owner),
+        eq(scans.repoName, info.repo),
+        eq(scans.status, 'scanning'),
+        sql`${scans.createdAt} < now() - interval '10 minutes'`,
+      ),
+    );
 
   const [scan] = await db
     .insert(scans)
