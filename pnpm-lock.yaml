@@ -20,9 +20,6 @@ importers:
 
   apps/api:
     dependencies:
-      '@github/copilot-sdk':
-        specifier: ^0.2.1
-        version: 0.2.1
       '@hono/node-server':
         specifier: ^1.19.12
         version: 1.19.13(hono@4.12.12)
@@ -659,50 +656,6 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
-
-  '@github/copilot-darwin-arm64@1.0.21':
-    resolution: {integrity: sha512-aB+s9ldTwcyCOYmzjcQ4SknV6g81z92T8aUJEJZBwOXOTBeWKAJtk16ooAKangZgdwuLgO3or1JUjx1FJAm5nQ==}
-    cpu: [arm64]
-    os: [darwin]
-    hasBin: true
-
-  '@github/copilot-darwin-x64@1.0.21':
-    resolution: {integrity: sha512-aNad81DOGuGShmaiFNIxBUSZLwte0dXmDYkGfAF9WJIgY4qP4A8CPWFoNr8//gY+4CwaIf9V+f/OC6k2BdECbw==}
-    cpu: [x64]
-    os: [darwin]
-    hasBin: true
-
-  '@github/copilot-linux-arm64@1.0.21':
-    resolution: {integrity: sha512-FL0NsCnHax4czHVv1S8iBqPLGZDhZ28N3+6nT29xWGhmjBWTkIofxLThKUPcyyMsfPTTxIlrdwWa8qQc5z2Q+g==}
-    cpu: [arm64]
-    os: [linux]
-    hasBin: true
-
-  '@github/copilot-linux-x64@1.0.21':
-    resolution: {integrity: sha512-S7pWVI16hesZtxYbIyfw+MHZpc5ESoGKUVr5Y+lZJNaM2340gJGPQzQwSpvKIRMLHRKI2hXLwciAnYeMFxE/Tg==}
-    cpu: [x64]
-    os: [linux]
-    hasBin: true
-
-  '@github/copilot-sdk@0.2.1':
-    resolution: {integrity: sha512-S1n/4X1viqbSAWcHDZcFyZ/7hgTLAXr3NY7yNmHoX/CL4LTuYIJ6y5w2jrqUnrJNQgtNrMDSFGwFU+H1GeynFw==}
-    engines: {node: '>=20.0.0'}
-
-  '@github/copilot-win32-arm64@1.0.21':
-    resolution: {integrity: sha512-a9qc2Ku+XbyBkXCclbIvBbIVnECACTIWnPctmXWsQeSdeapGxgfHGux7y8hAFV5j6+nhCm6cnyEMS3rkZjAhdA==}
-    cpu: [arm64]
-    os: [win32]
-    hasBin: true
-
-  '@github/copilot-win32-x64@1.0.21':
-    resolution: {integrity: sha512-9klu+7NQ6tEyb8sibb0rsbimBivDrnNltZho10Bgbf1wh3o+erTjffXDjW9Zkyaw8lZA9Fz8bqhVkKntZq58Lg==}
-    cpu: [x64]
-    os: [win32]
-    hasBin: true
-
-  '@github/copilot@1.0.21':
-    resolution: {integrity: sha512-P+nORjNKAtl92jYCG6Qr1Rsw2JoyScgeQSkIR6O2WB37WS5JVdA4ax1WVualMbfuc9V58CPHX6fwyNpkI89FkQ==}
-    hasBin: true
 
   '@hono/node-server@1.19.13':
     resolution: {integrity: sha512-TsQLe4i2gvoTtrHje625ngThGBySOgSK3Xo2XRYOdqGN1teR8+I7vchQC46uLJi8OF62YTYA3AhSpumtkhsaKQ==}
@@ -1883,10 +1836,6 @@ packages:
       jsdom:
         optional: true
 
-  vscode-jsonrpc@8.2.1:
-    resolution: {integrity: sha512-kdjOSJ2lLIn7r1rtrMbbNCHjyMPfRnowdKjBQ+mGq6NAW5QY2bEZC/khaC5OR8svbbjvLEaIXkOq45e2X9BIbQ==}
-    engines: {node: '>=14.0.0'}
-
   why-is-node-running@2.3.0:
     resolution: {integrity: sha512-hUrmaWBdVDcxvYqnyh09zunKzROWjbZTiNy8dBEjkS7ehEDQibXJ7XvlmtbwuTclUiIyN+CyXQD4Vmko8fNm8w==}
     engines: {node: '>=8'}
@@ -1899,9 +1848,6 @@ packages:
   yallist@5.0.0:
     resolution: {integrity: sha512-YgvUTfwqyc7UXVMrB+SImsVYSmTS8X/tSrtdNZMImM+n7+QTriRXyXim0mBrTXNeqzVF0KWGgHPeiyViFFrNDw==}
     engines: {node: '>=18'}
-
-  zod@4.3.6:
-    resolution: {integrity: sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==}
 
 snapshots:
 
@@ -2201,39 +2147,6 @@ snapshots:
 
   '@esbuild/win32-x64@0.27.7':
     optional: true
-
-  '@github/copilot-darwin-arm64@1.0.21':
-    optional: true
-
-  '@github/copilot-darwin-x64@1.0.21':
-    optional: true
-
-  '@github/copilot-linux-arm64@1.0.21':
-    optional: true
-
-  '@github/copilot-linux-x64@1.0.21':
-    optional: true
-
-  '@github/copilot-sdk@0.2.1':
-    dependencies:
-      '@github/copilot': 1.0.21
-      vscode-jsonrpc: 8.2.1
-      zod: 4.3.6
-
-  '@github/copilot-win32-arm64@1.0.21':
-    optional: true
-
-  '@github/copilot-win32-x64@1.0.21':
-    optional: true
-
-  '@github/copilot@1.0.21':
-    optionalDependencies:
-      '@github/copilot-darwin-arm64': 1.0.21
-      '@github/copilot-darwin-x64': 1.0.21
-      '@github/copilot-linux-arm64': 1.0.21
-      '@github/copilot-linux-x64': 1.0.21
-      '@github/copilot-win32-arm64': 1.0.21
-      '@github/copilot-win32-x64': 1.0.21
 
   '@hono/node-server@1.19.13(hono@4.12.12)':
     dependencies:
@@ -3218,8 +3131,6 @@ snapshots:
     transitivePeerDependencies:
       - msw
 
-  vscode-jsonrpc@8.2.1: {}
-
   why-is-node-running@2.3.0:
     dependencies:
       siginfo: 2.0.0
@@ -3228,5 +3139,3 @@ snapshots:
   xtend@4.0.2: {}
 
   yallist@5.0.0: {}
-
-  zod@4.3.6: {}

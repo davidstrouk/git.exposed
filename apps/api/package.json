@@ -11,7 +11,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@github/copilot-sdk": "^0.2.1",
     "@hono/node-server": "^1.19.12",
     "@repo/shared": "workspace:*",
     "hono": "^4.12.10",
