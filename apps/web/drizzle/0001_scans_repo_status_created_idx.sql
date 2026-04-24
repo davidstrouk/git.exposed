@@ -1,0 +1,1 @@
+CREATE INDEX "scans_repo_status_created_idx" ON "scans" USING btree ("repo_owner","repo_name","status","created_at" DESC NULLS LAST);

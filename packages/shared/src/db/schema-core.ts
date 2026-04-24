@@ -1,4 +1,4 @@
-import { integer, pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { index, integer, pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 // --- Scan tables ---
 
@@ -6,18 +6,24 @@ export const scanStatusEnum = pgEnum('scan_status', ['pending', 'scanning', 'com
 export const severityEnum = pgEnum('severity', ['critical', 'high', 'medium', 'low', 'info']);
 export const gradeEnum = pgEnum('grade', ['A', 'B', 'C', 'D', 'F']);
 
-export const scans = pgTable('scans', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  repoOwner: text('repo_owner').notNull(),
-  repoName: text('repo_name').notNull(),
-  repoUrl: text('repo_url').notNull(),
-  status: scanStatusEnum('status').notNull().default('pending'),
-  score: integer('score'),
-  grade: gradeEnum('grade'),
-  findingsCount: integer('findings_count').default(0),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  completedAt: timestamp('completed_at'),
-});
+export const scans = pgTable(
+  'scans',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    repoOwner: text('repo_owner').notNull(),
+    repoName: text('repo_name').notNull(),
+    repoUrl: text('repo_url').notNull(),
+    status: scanStatusEnum('status').notNull().default('pending'),
+    score: integer('score'),
+    grade: gradeEnum('grade'),
+    findingsCount: integer('findings_count').default(0),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    completedAt: timestamp('completed_at'),
+  },
+  (t) => [
+    index('scans_repo_status_created_idx').on(t.repoOwner.asc(), t.repoName.asc(), t.status.asc(), t.createdAt.desc()),
+  ],
+);
 
 export const findings = pgTable('findings', {
   id: uuid('id').defaultRandom().primaryKey(),

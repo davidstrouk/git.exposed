@@ -8,6 +8,13 @@
       "when": 1775204386399,
       "tag": "0000_goofy_sally_floyd",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1777050100532,
+      "tag": "0001_scans_repo_status_created_idx",
+      "breakpoints": true
     }
   ]
 }
