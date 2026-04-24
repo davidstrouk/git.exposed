@@ -28,20 +28,24 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
+    console.warn('[scan] rejected', { ip, reason: 'invalid-json' });
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
   const { url } = body;
   if (!url || typeof url !== 'string') {
+    console.warn('[scan] rejected', { ip, reason: 'missing-url' });
     return NextResponse.json({ error: 'URL is required' }, { status: 400 });
   }
 
   const info = parseGitHubUrl(url);
   if (!info) {
+    console.warn('[scan] rejected', { ip, url, reason: 'invalid-url' });
     return NextResponse.json({ error: 'Invalid GitHub URL' }, { status: 400 });
   }
 
   if (!isValidRepoName(info.owner) || !isValidRepoName(info.repo)) {
+    console.warn('[scan] rejected', { ip, url, reason: 'invalid-name' });
     return NextResponse.json({ error: 'Invalid owner or repo name' }, { status: 400 });
   }
 
