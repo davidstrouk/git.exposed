@@ -13,6 +13,9 @@ export const maxDuration = 60;
 const SCANNER_URL = process.env.SCANNER_BACKEND_URL;
 const SCAN_SECRET = process.env.SCAN_SECRET || '';
 
+// biome-ignore lint/suspicious/noControlCharactersInRegex: stripping control chars is the point
+const sanitize = (s: string) => s.replace(/[\x00-\x1f\x7f]/g, '').slice(0, 256);
+
 export async function POST(request: Request) {
   const headersList = await headers();
   const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
@@ -28,20 +31,28 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
+    console.warn('[scan] rejected', { ip, reason: 'invalid-json' });
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
   const { url } = body;
   if (!url || typeof url !== 'string') {
+    console.warn('[scan] rejected', { ip, reason: 'missing-url' });
     return NextResponse.json({ error: 'URL is required' }, { status: 400 });
   }
 
   const info = parseGitHubUrl(url);
   if (!info) {
+    console.warn('[scan] rejected', { ip, url: sanitize(url), reason: 'invalid-url' });
     return NextResponse.json({ error: 'Invalid GitHub URL' }, { status: 400 });
   }
 
   if (!isValidRepoName(info.owner) || !isValidRepoName(info.repo)) {
+    console.warn('[scan] rejected', {
+      ip,
+      repo: `${sanitize(info.owner)}/${sanitize(info.repo)}`,
+      reason: 'invalid-name',
+    });
     return NextResponse.json({ error: 'Invalid owner or repo name' }, { status: 400 });
   }
 
