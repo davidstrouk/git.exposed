@@ -56,7 +56,7 @@ node --env-file=.env.production.local node_modules/.bin/drizzle-kit migrate
 rm .env.production.local
 ```
 
-`.env*.local` is gitignored. The migrator is idempotent — re-running it is a no-op once the latest migration is recorded in `__drizzle_migrations`.
+`.env*` is gitignored (except `.env.example`). The migrator is idempotent — re-running it is a no-op once the latest migration is recorded in `__drizzle_migrations`.
 
 > `node --env-file=` requires Node 20.6+. On older Node 20.x, use a dotenv runner instead:
 > `pnpm dlx dotenv-cli -e .env.production.local -- drizzle-kit migrate`
