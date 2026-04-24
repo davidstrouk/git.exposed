@@ -8,19 +8,20 @@ Next.js App Router frontend for git.exposed. Deployed to Vercel.
 
 Needs a Postgres instance. The simplest path:
 
-```bash
-# From repo root — start a local Postgres container
-docker run --name gitexposed-pg -e POSTGRES_USER=gitexposed -e POSTGRES_PASSWORD=gitexposed \
-  -e POSTGRES_DB=gitexposed -p 5433:5432 -d postgres:17
-
-# Point apps/web at it
-echo "DATABASE_URL=postgresql://gitexposed:gitexposed@localhost:5433/gitexposed" >> apps/web/.env
-
-# Apply schema
-pnpm --filter @repo/web db:migrate
-```
-
-Then `pnpm turbo dev` from repo root.
+1. Start a local Postgres container (from repo root):
+   ```bash
+   docker run --name gitexposed-pg -e POSTGRES_USER=gitexposed -e POSTGRES_PASSWORD=gitexposed \
+     -e POSTGRES_DB=gitexposed -p 5433:5432 -d postgres:17
+   ```
+2. Create or edit `apps/web/.env` and set:
+   ```
+   DATABASE_URL=postgresql://gitexposed:gitexposed@localhost:5433/gitexposed
+   ```
+3. Apply schema:
+   ```bash
+   pnpm --filter @repo/web db:migrate
+   ```
+4. Start the dev server: `pnpm turbo dev` from repo root.
 
 ## Database migrations
 
