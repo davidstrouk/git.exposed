@@ -49,15 +49,37 @@ const PATTERNS: Pattern[] = [
   },
 ];
 
+// Test suites, docs and fixtures are full of credential-shaped strings that are
+// not credentials. These tells are cheap and high-confidence. Anything subtler
+// stays a finding, because a missed real key costs more than a false positive.
+const PLACEHOLDER_WORD = /example|placeholder|dummy|fake|sample|redacted|changeme|your[_-]?|notreal|deadbeef|xxxx/i;
+const REPEATED_RUN = /(.)\1{5,}/;
+
+/** True when the value runs 6 or more consecutive characters, such as `abcdef`. */
+function hasSequentialRun(value: string): boolean {
+  let run = 1;
+  for (let i = 1; i < value.length; i++) {
+    run = value.charCodeAt(i) - value.charCodeAt(i - 1) === 1 ? run + 1 : 1;
+    if (run >= 6) return true;
+  }
+  return false;
+}
+
+export const isPlaceholderSecret = (value: string) =>
+  PLACEHOLDER_WORD.test(value) || REPEATED_RUN.test(value) || hasSequentialRun(value);
+
 export const secretsCheck: Check = {
   name: 'secrets',
   async run(directory) {
     const findings: Finding[] = [];
-    for (const file of await walk(directory)) {
+    // A committed credential is exploitable wherever it lives, so test paths are
+    // read too. Placeholder values are filtered below instead.
+    for (const file of await walk(directory, { skipTestPaths: false })) {
       const lines = (await readFile(file, 'utf-8')).split('\n');
       for (let i = 0; i < lines.length; i++) {
         for (const p of PATTERNS) {
-          if (p.regex.test(lines[i])) {
+          const match = lines[i].match(p.regex);
+          if (match && !isPlaceholderSecret(match[0])) {
             findings.push({
               checkName: 'secrets',
               severity: p.severity,
