@@ -18,7 +18,7 @@ const SKIP_DIRS = new Set([
 // root, never the absolute path: scanning a repo skips its fixture directories,
 // but scanning a fixture directory directly still returns the files inside it.
 // `examples` is intentionally absent — example dirs do leak real keys.
-const TEST_PATH = /(^|\/)(tests?|__tests__|spec|fixtures?|mocks?|testdata|e2e)(\/|$)|\.(test|spec)\./i;
+const TEST_PATH = /(^|\/)(__)?(tests?|specs?|fixtures?|mocks?|testdata|e2e)(__)?(\/|$)|\.(test|spec)\./i;
 
 const CODE_EXTS = new Set([
   '.js',

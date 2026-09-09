@@ -22,6 +22,8 @@ beforeAll(async () => {
   await write('__tests__/thing.ts');
   await write('spec/foo.ts');
   await write('mocks/bar.ts');
+  await write('__mocks__/fs.ts');
+  await write('__fixtures__/data.ts');
   await write('e2e/flow.ts');
   await write('testdata/seed.json');
   await write('node_modules/pkg/index.js');

@@ -8,13 +8,22 @@
  * line and column numbers survive unchanged.
  *
  * Template interpolations (`${...}`) are real code and stay visible even when
- * strings are blanked. Regex literals are left alone: telling `/` division from
- * `/` regex needs a parser, and the patterns here don't match escaped source.
+ * strings are blanked. Regex literals are treated as text like strings, and are
+ * recognised before the quote rules so that a quote or backtick inside one does
+ * not put the scanner into string mode and blank the rest of the file.
  */
 
 type Mode = 'code' | 'single' | 'double' | 'template';
 
 const blank = (s: string) => s.replace(/[^\n]/g, ' ');
+
+// A `/` is division when the previous token is a value, and starts a regex
+// literal otherwise. Keywords end in word characters, so allow the ones that
+// can precede a regex.
+const DIVIDES_AFTER = /[)\]}\w$]$/;
+const KEYWORD_BEFORE_REGEX = /\b(return|typeof|instanceof|in|of|new|delete|void|throw|case|do|else|yield|await)$/;
+
+const startsRegex = (sig: string) => sig === '' || !DIVIDES_AFTER.test(sig) || KEYWORD_BEFORE_REGEX.test(sig);
 
 function strip(source: string, blankStrings: boolean): string {
   const hide = blankStrings ? blank : (s: string) => s;
@@ -25,7 +34,15 @@ function strip(source: string, blankStrings: boolean): string {
   let out = '';
   let mode: Mode = 'code';
   let braceDepth = 0;
+  // The last few significant code characters, used to tell division from a
+  // regex literal. Whitespace is dropped so line breaks do not hide a keyword.
+  let sig = '';
   let i = 0;
+
+  const emit = (ch: string) => {
+    out += ch;
+    if (!/\s/.test(ch)) sig = (sig + ch).slice(-12);
+  };
 
   while (i < n) {
     const ch = source[i];
@@ -42,13 +59,37 @@ function strip(source: string, blankStrings: boolean): string {
         const end = close === -1 ? n : close + 2;
         out += blank(source.slice(i, end));
         i = end;
+      } else if (ch === '/' && startsRegex(sig)) {
+        // A regex literal cannot span a newline, so stop there if the closing
+        // delimiter is missing and this was really division after all.
+        out += ch;
+        i++;
+        let inClass = false;
+        while (i < n && source[i] !== '\n') {
+          const c = source[i];
+          if (c === '\\') {
+            out += hide(source.slice(i, i + 2));
+            i += 2;
+            continue;
+          }
+          if (c === '/' && !inClass) break;
+          if (c === '[') inClass = true;
+          else if (c === ']') inClass = false;
+          out += hide(c);
+          i++;
+        }
+        if (i < n && source[i] === '/') {
+          out += '/';
+          i++;
+        }
+        sig = 'x';
       } else if (ch === '"' || ch === "'" || ch === '`') {
         mode = ch === '"' ? 'double' : ch === "'" ? 'single' : 'template';
         out += ch;
         i++;
       } else if (ch === '{') {
         braceDepth++;
-        out += ch;
+        emit(ch);
         i++;
       } else if (ch === '}' && interpolations.at(-1) === braceDepth) {
         // Closes the innermost `${`, putting us back inside its template.
@@ -58,7 +99,7 @@ function strip(source: string, blankStrings: boolean): string {
         i++;
       } else {
         if (ch === '}') braceDepth = Math.max(0, braceDepth - 1);
-        out += ch;
+        emit(ch);
         i++;
       }
       continue;
@@ -79,6 +120,7 @@ function strip(source: string, blankStrings: boolean): string {
       } else if (ch === '`') {
         mode = 'code';
         out += ch;
+        sig = 'x';
         i++;
       } else {
         out += hide(ch);
@@ -92,6 +134,7 @@ function strip(source: string, blankStrings: boolean): string {
     if (ch === (mode === 'single' ? "'" : '"') || ch === '\n') {
       mode = 'code';
       out += ch;
+      sig = 'x';
     } else {
       out += hide(ch);
     }
@@ -101,10 +144,10 @@ function strip(source: string, blankStrings: boolean): string {
   return out;
 }
 
-/** Blanks comments, leaving string literals intact. */
+/** Blanks comments, leaving string and regex literals intact. */
 export const stripComments = (source: string) => strip(source, false);
 
-/** Blanks comments and string literals, leaving `${...}` interpolations intact. */
+/** Blanks comments, strings and regex literals, keeping `${...}` interpolations. */
 export const stripCommentsAndStrings = (source: string) => strip(source, true);
 
 /** Extensions whose syntax `strip` actually understands. */
